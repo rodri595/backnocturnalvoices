@@ -15,7 +15,15 @@ module.exports = class {
 
   static async addVoice(data) {
     try {
-      const { city, country_name, latitude, longitude, title, audio } = data;
+      const {
+        city,
+        country_name,
+        latitude,
+        longitude,
+        title,
+        audio,
+        utc,
+      } = data;
 
       const marker = {
         city: city,
@@ -24,6 +32,7 @@ module.exports = class {
         coords: [parseFloat(latitude), parseFloat(longitude)],
         title: title,
         base64audio: audio,
+        utc: utc,
         datetime: new Date(),
       };
       const result = await voicenoteColl.insertOne(marker);
@@ -61,6 +70,52 @@ module.exports = class {
 
       let data = await voicenoteColl.aggregate(filter);
       return data.toArray();
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+  static async checkcount() {
+    try {
+      var date = new Date(),
+        y = date.getFullYear(),
+        m = date.getMonth(),
+        d = date.getDate();
+
+      let start = `${y}-${m < 10 ? `0${m + 1}` : m + 1}-${
+        d < 10 ? `0${d}` : d
+      }T00:00`;
+      let end = `${y}-${m < 10 ? `0${m + 1}` : m + 1}-${
+        d < 10 ? `0${d}` : d
+      }T23:59`;
+
+      let filter = {
+        datetime: {
+          $gte: new Date(start),
+          $lt: new Date(end),
+        },
+      };
+
+      let data = await voicenoteColl.find(filter).count();
+      return data;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+  static async getall() {
+    try {
+      let data = await voicenoteColl.find();
+      return data.toArray();
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+  static async checkcountarchive() {
+    try {
+      let data = await voicenoteColl.find().count();
+      return data;
     } catch (err) {
       console.log(err);
       return err;

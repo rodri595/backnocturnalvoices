@@ -36,5 +36,43 @@ router.get("/getallbydate", async (req, res) => {
     res.status(500).json({ Error: "Algo Sucedio Mal intentar de nuevo." });
   }
 });
+router.post("/check", async (req, res) => {
+  try {
+    let markers = await voicenoteModel.checkcount();
+    if (markers === req.body.size) {
+      res.status(200).json({ status: "EMPTY" });
+    } else {
+      let markers = await voicenoteModel.getalldate();
+      res.status(200).json({ status: "GOOD", markers });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ Error: "Algo Sucedio Mal intentar de nuevo." });
+  }
+});
+
+router.get("/getallbydatearchive", async (req, res) => {
+  try {
+    let markers = await voicenoteModel.getall();
+    res.status(200).json({ status: "GOOD", markers });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ Error: "Algo Sucedio Mal intentar de nuevo." });
+  }
+});
+router.post("/checkarchive", async (req, res) => {
+  try {
+    let markers = await voicenoteModel.checkcountarchive();
+    if (markers === req.body.size) {
+      res.status(200).json({ status: "EMPTY" });
+    } else {
+      let markers = await voicenoteModel.getall();
+      res.status(200).json({ status: "GOOD", markers });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ Error: "Algo Sucedio Mal intentar de nuevo." });
+  }
+});
 
 module.exports = router;
