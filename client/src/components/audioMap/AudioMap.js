@@ -71,7 +71,7 @@ const AudioMap = ({
           const { current = {} } = mapRef;
           const { leafletElement: map } = current;
           setcoords([position.coords.latitude, position.coords.longitude]);
-          map.flyTo([position.coords.latitude, position.coords.longitude], 8, {
+          map.flyTo([position.coords.latitude, position.coords.longitude], 14, {
             duration: 4,
           });
         },

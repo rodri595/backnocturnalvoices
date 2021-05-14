@@ -2,7 +2,6 @@
 import React, { useEffect } from "react";
 import Marquee from "react-double-marquee";
 import AudioPlayer from "react-h5-audio-player";
-import "react-h5-audio-player/lib/styles.css";
 
 const Player = ({
   //new menu

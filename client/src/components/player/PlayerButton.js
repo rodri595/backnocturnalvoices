@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Menu from "../../assets/img/menuu.png";
+import Menu from "../../assets/img/menu.svg";
 
 const PlayerButton = ({ sethammenu }) => {
   const [isactive, setisactive] = useState(false);
@@ -15,7 +15,7 @@ const PlayerButton = ({ sethammenu }) => {
         <img
           src={Menu}
           alt="hamburger menu"
-          style={{ height: "20px", width: "20px" }}
+          style={{ height: "25px", width: "25px" }}
         />
         {/* </span> */}
       </div>

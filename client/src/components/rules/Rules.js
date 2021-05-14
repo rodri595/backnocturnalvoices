@@ -1,4 +1,5 @@
 import React from "react";
+import LightLogo from "../../assets/img/LightName.svg";
 
 const Rules = ({ page, openrulez, setopenrulez }) => {
   return (
@@ -27,21 +28,23 @@ const Rules = ({ page, openrulez, setopenrulez }) => {
           <div className="text-center">
             <div
               style={{
-                fontSize: "23px",
-                fontWeight: "bolder",
                 color: "white",
               }}
             >
-              {page === "archive"
-                ? "THE ARCHIVE MAP OF NOCTURNAL VOICES"
-                : "WELCOME TO THE NOCTURNAL VOICES"}
+              {page === "archive" ? (
+                "THE ARCHIVE MAP OF NOCTURNAL VOICES"
+              ) : (
+                <img
+                  src={LightLogo}
+                  alt
+                  draggable={false}
+                  style={{ height: "150px" }}
+                />
+              )}
             </div>
             {page === "archive" ? (
               <>
-                <div
-                  className="rule-questions text-white"
-                  style={{ marginTop: "20px" }}
-                ></div>
+                <div className="rule-questions text-white"></div>
                 <div className="rule-questions text-white">
                   Explore, click and listen to previous submissions from around
                   the world.
@@ -49,17 +52,18 @@ const Rules = ({ page, openrulez, setopenrulez }) => {
               </>
             ) : (
               <>
-                <div
-                  className="rule-questions text-white"
-                  style={{ marginTop: "20px" }}
-                >
-                  What do you love about the night? OR what do you miss about
-                  the day?
+                <div className="rule-questions-home-top text-white">
+                  “We have voices and opinions too, we just need a platform
+                  where they can be heard.”
                 </div>
-                <div className="rule-questions text-white">
-                  You see a world that other people have not seen before, what
-                  is something that you want people to know about working night
-                  shifts?
+                <div className="rule-questions-home-bottom text-white">
+                  This is a collection of nocturnal voices. By recognising the
+                  voices of night workers from around the world, we aim to help
+                  alleviate a sense of loneliness and to spread awareness of the
+                  hardships night workers experience.
+                  <br />
+                  <br />
+                  Respond to the questions on the Rules page.
                 </div>
               </>
             )}

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import Logo from "../../assets/img/chat.png";
 import { addVoicenote } from "./Axios";
 import Swal from "sweetalert2";
+import useRecorder from "./useRecorder";
+import AudioPlayer from "react-h5-audio-player";
+import "react-h5-audio-player/lib/styles.css";
 
 const AudioImport = ({
   audioimportOpen,
@@ -15,10 +18,22 @@ const AudioImport = ({
 }) => {
   const [isloading, setisloading] = useState(false);
   const [isaudio, setisaudio] = useState();
+  const [recordOption, setrecordOption] = useState();
   const [isaudiofile, setisaudiofile] = useState();
   const [istitle, setistitle] = useState("");
   const [isutctime, setisutctime] = useState("");
   const [nogpsHandler, setnogpsHandler] = useState(true);
+  let [audioURL, isRecording, startRecording, stopRecording] = useRecorder();
+
+  useEffect(() => {
+    if (audioURL === "") return;
+    let reader = new FileReader();
+    reader.readAsDataURL(audioURL);
+    reader.onload = () => {
+      setrecordOption("record");
+      setisaudio(reader.result);
+    };
+  }, [audioURL]);
 
   useEffect(() => {
     let x = new Date().getTimezoneOffset();
@@ -32,7 +47,6 @@ const AudioImport = ({
 
   const inputHandler = (e) => {
     if (e.target.name === "country_name") {
-      console.log(e.target.value);
       setcountry_name(e.target.value);
     }
     if (e.target.name === "city_name") {
@@ -41,14 +55,16 @@ const AudioImport = ({
     if (e.target.name === "istitle") {
       setistitle(e.target.value);
     }
+
     if (e.target.name === "isaudio") {
       if (!(e.target.files[0] === undefined)) {
         if (e.target.files[0].type.includes("audio")) {
-          if (Math.round(e.target.files[0].size / 1000) <= 15000) {
+          if (Math.round(e.target.files[0].size / 1000) <= 500) {
             let file = e.target.files[0];
             let reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = () => {
+              setrecordOption("import");
               setisaudio(reader.result);
               if (istitle === "") {
                 setistitle(file.name);
@@ -86,9 +102,8 @@ const AudioImport = ({
       }
     }
   };
-
   const uploadHandler = async () => {
-    if (isaudio === undefined || istitle === "") {
+    if (isaudio === undefined) {
       Swal.fire({
         icon: "error",
         html: `<div class="voicenote-save">Please record and import a new audio</div>`,
@@ -99,10 +114,10 @@ const AudioImport = ({
         showConfirmButton: false,
       });
     } else {
-      if (country_name === "" || city_name === "") {
+      if (country_name === "" || city_name === "" || istitle === "") {
         Swal.fire({
           icon: "error",
-          html: `<div class="voicenote-save">Please add the city and country name or allow gps permisions and reload webiste </div>`,
+          html: `<div class="voicenote-save">Please fill the information </div>`,
           toast: true,
           position: "top",
           timer: 1000,
@@ -140,6 +155,7 @@ const AudioImport = ({
       }
     }
   };
+
   return (
     <>
       {isloading ? (
@@ -159,7 +175,7 @@ const AudioImport = ({
         <br />
         <div>
           1) A clear mp3 file of your voice. Background noise is okay (MP3
-          format only)
+          format and under 500kb only)
         </div>
         <div>
           2) People who submit voice messages are those who work between the
@@ -169,13 +185,6 @@ const AudioImport = ({
           3) In the language you feel most comfortable in. All languages and
           dialects are welcome.
         </div>
-        {/* <br />
-        <div style={{ fontSize: "10px" }}>
-          <em>
-            *London Night Time Commission says that night shifts are people who
-            work between 6pm - 6am.
-          </em>
-        </div> */}
       </div>
 
       <div className={audioimportOpen ? "audioimportOpen" : "audioimportClose"}>
@@ -205,6 +214,36 @@ const AudioImport = ({
               >
                 Whats on your mind?
               </div>
+              {isaudio === undefined ? (
+                ""
+              ) : (
+                <AudioPlayer
+                  autoPlay
+                  src={isaudio}
+                  showSkipControls={false}
+                  showJumpControls={false}
+                />
+              )}
+              {recordOption === "record" || recordOption === undefined ? (
+                <>
+                  <button
+                    className="media-icon text-white recording-style"
+                    onClick={startRecording}
+                    disabled={isRecording}
+                  >
+                    Record
+                  </button>
+                  <button
+                    className="media-icon text-white recording-style"
+                    onClick={stopRecording}
+                    disabled={!isRecording}
+                  >
+                    stop
+                  </button>
+                </>
+              ) : (
+                ""
+              )}
               <div className="folio-form">
                 <input
                   className="form-control text-white font-weight-bold"
@@ -214,16 +253,19 @@ const AudioImport = ({
                   onChange={(e) => inputHandler(e)}
                   placeholder="Title of Audio"
                 />
-
-                <input
-                  className=" rod-file-input form-control text-white media-icon"
-                  type="file"
-                  name="isaudio"
-                  accept="audio/*"
-                  value={isaudiofile}
-                  onChange={(e) => inputHandler(e)}
-                  placeholder="Voice Note"
-                />
+                {recordOption === "import" || recordOption === undefined ? (
+                  <input
+                    className=" rod-file-input form-control text-white media-icon"
+                    type="file"
+                    name="isaudio"
+                    accept="audio/*"
+                    value={isaudiofile}
+                    onChange={(e) => inputHandler(e)}
+                    placeholder="Voice Note"
+                  />
+                ) : (
+                  ""
+                )}
                 {nogpsHandler ? (
                   <>
                     <select
@@ -616,7 +658,6 @@ const AudioImport = ({
                   borderColor: "transparent",
                 }}
                 className="media-icon text-white"
-                // className="btn btn-primary  rounded-pill pageload-link btn-hover-translate btn-hover-shadow-down goto btn-shadow "
                 onClick={() => uploadHandler()}
               >
                 Upload
